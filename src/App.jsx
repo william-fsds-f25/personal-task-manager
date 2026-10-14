@@ -13,21 +13,23 @@ function App() {
   
 /*Part 2*/
 
-const [tasks, setTasks] = useState(InitialTasks);
-const [newTask, setNewTask] = useState("");
+const [tasks, setTasks] = useState(InitialTasks); // Stores the saved items in the current applications session
+const [newTask, setNewTask] = useState(""); // Stores the draft 
 
 function handleSubmit(event) {
 
   event.preventDefault();
 
-  const title = newTask.trim();
+  const title = newTask.trim(); // deletes spaces at the beginning and also the end. 
 
+  
+  // Rejecting empty tasks
   if (!title) {
     return;
   }
 
   const task = {
-    id: crypto.randomUUID,
+    id: crypto.randomUUID(),
     title: title,
     completed: false,
   }
@@ -74,6 +76,8 @@ function handleSubmit(event) {
       </ul>
       <br />
     </main>
+
+    
   );
 
 }
