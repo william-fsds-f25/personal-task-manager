@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import './App.css'
 
+// Starter list shown when the app first loads (not saved after refresh)
 const InitialTasks = [
   { id: 1, title: "Study Javascript", completed: false },
   { id: 2, title: "Practice React", completed: true },
@@ -9,35 +10,45 @@ const InitialTasks = [
 ]
 
 
+
 function App() {
-  
-/*Part 2*/
+  // tasks = the list on screen; newTask = text currently typed in the input
+  const [tasks, setTasks] = useState(InitialTasks);
+  const [newTask, setNewTask] = useState("");
 
-const [tasks, setTasks] = useState(InitialTasks); // Stores the saved items in the current applications session
-const [newTask, setNewTask] = useState(""); // Stores the draft 
+  function handleSubmit(event) {
+    // Stop the browser from reloading the page on form submit
+    event.preventDefault();
 
-function handleSubmit(event) {
+    const title = newTask.trim(); // remove extra spaces at both ends
 
-  event.preventDefault();
+    if (!title) {
+      return; // ignore empty or whitespace-only input
+    }
 
-  const title = newTask.trim(); // deletes spaces at the beginning and also the end. 
+    const task = {
+      id: crypto.randomUUID(), // unique id so React can track this item in the list
+      title: title,
+      completed: false,
+    }
 
-  
-  // Rejecting empty tasks
-  if (!title) {
-    return;
+    // Copy the old list and append the new task (never mutate the previous array)
+    setTasks((currentTasks) => [...currentTasks, task]);
+    setNewTask(""); // clear the input after adding
   }
 
-  const task = {
-    id: crypto.randomUUID(),
-    title: title,
-    completed: false,
+  function toggleTask(taskId){
+    setTasks((currentTasks) => 
+      currentTasks.map((task) =>{
+        if(task.id === taskId){
+          return {...task, completed: !task.completed}
+        }
+        else {
+          return task;
+        }
+      }));
+  
   }
-
-  setTasks((currentTasks) => [...currentTasks, task]);
-  setNewTask("");
-
-}
 
   return (
     <main>
@@ -47,6 +58,7 @@ function handleSubmit(event) {
       </p>
 
       <form className='task-form' onSubmit={handleSubmit}>
+        {/* sr-only: visible to screen readers, hidden visually */}
         <label className='sr-only' htmlFor='task-input'>
           New Task
         </label>
@@ -64,22 +76,24 @@ function handleSubmit(event) {
 
       <ul className='task-list'>
         {tasks.map((task) => (
-          <div className='task-item' key={task.id}>
+          <li className='task-item' key={task.id}>
             <span className={task.completed ? "completed" : ""}>
               {task.title}
             </span>
             <span className={task.completed ? "status done" : "status"}>
               {task.completed ? "Done" : "Pending"}
             </span>
-          </div>
+            <button
+              type='button'
+              onClick={() => toggleTask(task.id)}>
+                {task.completed ? "Mark pending" : "Mark completed"}
+            </button>
+          </li>
         ))}
       </ul>
       <br />
     </main>
-
-    
   );
-
 }
 
 export default App;
